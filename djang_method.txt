@@ -1,0 +1,79 @@
+
+django 만들기
+
+1. folder 하나 만든다. 
+
+2. 가상환경을 만든다. 
+2-1. virtualenv 이름 --python=python3.10
+2-2. .\이름\Scripts\activate
+
+3. 장고를 설치한다. 
+3-1. pip install django
+
+4. 프로젝트를 만든다.
+4-1 django-admin startproject mysite # mysite 는 프로젝트 이름
+4-2 ren mysite fbv-board # mysite 프로젝트 이름을 fbv-board 로 바꾼다.
+4-3 cd fbv-board
+
+5. 앱을 만든다. 
+5-1. python manage.py startapp board  #board 는 앱 이름
+
+6. 데이터베이스에 반영한다. 
+6-1. python manage.py migrate
+
+7. 관리자 계정을 만든다.
+7-1. python manage.py createsuperuser
+7-2. username : ??
+7-3. Email : ??
+7-4. password : 블라인드 처리되어 안보임
+* 비번이 너무 간단하면 계속 진행해도 되는지 y/n 으로 물어봄
+
+8. 정상적으로 동작되는지 실행해본다.
+8-1. python manage.py runserver
+
+9. mysite/settings.py 수정해준다.
+9-1. INSTALLED_APPS = 'board.apps.BoardConfig'
+9-2. LANGUAGE_CODE = 'ko-kr'
+9-3. TIME_ZONE = 'Asia/seoul'
+* 여기서 DB 주소를 변경할려면 DATABASES 를 수정한다. 
+
+
+10. board/models.py 에서 db 테이블을 만든다. 
+
+===============
+from django.db import models
+
+# Create your models here.
+from django.utils import timezone
+
+class Board(models.Model):
+    title = models.CharField(max_length=50)
+    writer = models.CharField(max_length=30)
+    content = models.TextField()
+    regdate = models.DateTimeField(auto_now=timezone.now)
+    readcount = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return '%s. %s(%d)' % (self.title, self.writer, self.readcount)
+    
+    def incrementReadCount(self):
+        self.readcount += 1
+        self.save()
+
+==================
+
+11. DB 에 테이블을 만든다.
+11-1. python manage.py makemigrations board
+
+12. DB에 반영한다.
+12-1. python manage.py migrate
+
+13. board/admin.py 에 admin page 를 등록한다.
+
+======
+from .models import Board
+# Register your models here.
+admin.site.register(Board)
+======
+
+
